@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }}{% endblock %}
+{% block content %}
+
+<h2>{{ movie.title }}</h2>
+<p>{{ movie.description }}</p>
+
+<hr>
+
+<h4>Reviews</h4>
+
+{% for review in movie.reviews.all %}
+<div class="card mb-3">
+    <div class="card-body">
+        <strong>{{ review.user.username }}</strong>
+      <div class="mb-1">
+    {% for i in "12345" %}
+        {% if forloop.counter <= review.rating %}
+            ⭐
+        {% else %}
+            ☆
+        {% endif %}
+    {% endfor %}
+</div>
+
+        <p>{{ review.content }}</p>
+
+
+        <h6>Comments:</h6>
+        <ul>
+            {% for comment in review.comments.all %}
+                <li><strong>{{ comment.user.username }}:</strong> {{ comment.text }}</li>
+            {% empty %}
+                <li>No comments</li>
+            {% endfor %}
+        </ul>
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'add_comment' review.id %}">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button class="btn btn-sm btn-outline-primary">Add comment</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<p>No reviews yet</p>
+{% endfor %}
+
+{% if user.is_authenticated %}
+<hr>
+<h5>Add review</h5>
+<form method="post" action="{% url 'add_review' movie.id %}">
+    {% csrf_token %}
+    {{ review_form.as_p }}
+    <button class="btn btn-success">Submit</button>
+</form>
+{% endif %}
+
+{% endblock %}
