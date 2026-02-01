@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Movies{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Movies</h1>
+
+<form method="get" class="mb-3">
+    <input type="text" name="q" class="form-control" placeholder="Search movie...">
+</form>
+
+<div class="mb-4">
+    <a href="/"
+       class="btn btn-sm {% if not request.GET.category %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
+        All
+    </a>
+
+    {% for category in categories %}
+        <a href="/?category={{ category.id }}"
+           class="btn btn-sm {% if request.GET.category == category.id|stringformat:'s' %}
+               btn-primary
+           {% else %}
+               btn-outline-primary
+           {% endif %}">
+            {{ category.name }}
+        </a>
+    {% endfor %}
+</div>
+
+<div class="row">
+    {% for movie in movies %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow-sm movie-card">
+
+                {% if movie.image %}
+                    <img src="{{ movie.image.url }}"
+                         class="card-img-top"
+                         style="height: 250px; object-fit: cover;">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text">
+                        {{ movie.description|truncatewords:15 }}
+                    </p>
+                    <a href="{% url 'movie_detail' movie.id %}"
+                       class="btn btn-primary">
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No movies yet</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
